@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Send Email</title>
+    <!-- Form styling -->
+    <link rel="stylesheet" href="{% static 'css/email_body.css' %}">
+    </head>
+    <body>
+        <div class="formcarry-container">
+            <form action="/bot/email/" method="POST" class="formcarry-form">
+                {% csrf_token %}
+                    {{ form }}
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </body>
+</html>
