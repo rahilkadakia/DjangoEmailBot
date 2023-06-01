@@ -3,6 +3,11 @@
 <form action="/bot/login/" method="post">
     {% csrf_token %}
     <table>
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
         {{ form.as_table }}
     </table>
     <input type="submit" value="Login">

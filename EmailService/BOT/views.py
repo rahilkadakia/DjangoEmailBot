@@ -4,9 +4,16 @@ from .models import EmailMetadata, User
 from django.core import serializers
 from .forms import RegisterForm, EmailForm, LoginForm
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login as auth_login
+
 
 def index(request):
-    return HttpResponse("BOT's index page")
+    print(request.user.is_authenticated)
+    if request.user.is_authenticated:
+        print(request.user)
+        return HttpResponse("Logged In Response")
+    return redirect('/bot/login/')
 
 def detail(request, primary_key):
     try:
@@ -16,6 +23,7 @@ def detail(request, primary_key):
     except:
         return HttpResponse("Invalid PK")
     
+    
 def user_detail(request, userID):
     try:
         obj = get_object_or_404(User, pk=userID)
@@ -24,6 +32,7 @@ def user_detail(request, userID):
     except:
         return HttpResponse("Invalid userID")
     
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -34,22 +43,27 @@ def register(request):
         form = RegisterForm()
     return render(request, "BOT/register.html", {"form":form})
 
+
 def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            try:
-                obj = User.objects.get(username=username, password=password)
+
+            obj = authenticate(username=username, password=password)
+
+            if obj is not None:
+                auth_login(request, obj)
                 return redirect('/bot/')
-            except:
+            else:
                 messages.error(request, 'Incorrect Credentials')
+                print('Incorrect Credentials')
                 return redirect('/bot/login/')
-            
     else:
         form = LoginForm()
     return render(request, 'BOT/login.html', {"form": form})
+
 
 def send_email(request):
     if request.method == "POST":
